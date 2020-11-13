@@ -1,0 +1,132 @@
+{% extends 'backend_layout.html' %}
+
+{% block title %}标签管理-博客系统后台管理{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block conent %}
+    <ol class="breadcrumb">
+        <li><a href="/backend/tags/">标签管理</a></li>
+        <li class="active">标签列表</li>
+    </ol>
+
+    <div>
+        <div class="row" style="padding: 20px 5px;">
+            <form class="form-horizontal" action="/backend/tag_add/" method="post">
+                {% csrf_token %}
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-1 control-label">标签名</label>
+
+                        <div class="col-xs-3">
+                            <input type="text" class="form-control" placeholder="请输入标签名" name="tag_name" />
+                        </div>
+                        <span style="color: red;">{{ obj.errors.tag_name.0 }}</span>
+                        <div class="col-xs-3">
+                            <input type="submit" class="btn btn-primary" value="添 加">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div style="height: 35px;background-color: #f5f5f5;line-height: 35px;padding: 0 15px;">
+            <i class="fa fa-table" aria-hidden="true"></i>
+            标签列表
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>标签</th>
+                    <th>文章个数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for k,v in tag2article_dic.items %}
+                    <tr>
+                        <td>
+                            <input type="text" value="{{ k }}" disabled />
+                            <input type="button" value="确认" style="display: none;" onclick="tag_edit(this);" />
+                        </td>
+                        <td>{{ v.1 }}</td>
+                        <td nid="{{ v.0 }}">
+                            <a href="javascript:void(0);" onclick="tag_del(this);" class="btn btn-danger btn-xs">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                                删除
+                            </a>
+                            |
+                            <a href="javascript:void(0);" onclick="tag_edit_ready(this);" class="btn btn-primary btn-xs">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                编辑
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="clearfix">
+            <ul class="pagination right" style="margin-top: 0">
+                {{ page_str }}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function tag_del(ths) {
+            console.log(123);
+            var val = $(ths).parent().attr("nid");
+            console.log(val);
+            $.ajax({
+                url: '/backend/tag_del/',
+                type: "POST",
+                data: {"nid": val},
+                //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+                success: function(data){
+                    // data是服务器端返回的字符串
+                    //var obj = JSON.parse(data);
+                    if(data){
+                        location.reload();
+                    }else{
+                        $('#error_msg').text(obj.error);
+                    }
+                }
+            });
+        }
+
+        function tag_edit_ready(ths) {
+            console.log(123);
+            $(ths).parent().prev().prev().find("input[type='text']").removeAttr("disabled");
+            $(ths).parent().prev().prev().find("input[type='button']").attr("style", "");
+            $(ths).attr("disabled", "disabled");
+        }
+
+        function tag_edit(ths) {
+            var val = $(ths).prev().val();
+            console.log(val);
+            var nid = $(ths).parent().next().next().attr("nid");
+            console.log(nid);
+            $.ajax({
+                url: '/backend/tag_edit/',
+                type: "POST",
+                data: {"nid": nid, "val": val},
+                //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+                success: function(data){
+                    // data是服务器端返回的字符串
+                    //var obj = JSON.parse(data);
+                    if(data){
+                        location.reload();
+                    }else{
+                        $('#error_msg').text(obj.error);
+                    }
+                }
+            });
+            $(ths).attr("style", "display: none;");
+            $(ths).parent().next().next().find("a[class='btn-primary']").removeAttr("disabled");
+        }
+    </script>
+{% endblock %}

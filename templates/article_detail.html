@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/edmure.css"/>
+    <link rel="stylesheet" href="/static/css/commons.css"/>
+    <link rel="stylesheet" href="/static/css/row-avatar.css"/>
+</head>
+<body>
+{% include 'include/header.html' %}
+<div class="container">
+    <div>
+        {% include 'home_layout.html' %}
+        <div class="col-md-8">
+            <div>
+                <div class="article-name" style="padding-top: 15px; font-size: 30px;">
+                    {{ obj.article.title }}
+                </div>
+                <div class="article-content">
+                    {{ obj.content|safe }}
+                </div>
+            </div>
+            <div class="art-recommend clearfix">
+                <div class="recommend">
+                    <a id="up" class="up" articleid="{{ obj.article.nid }}"
+                       style="margin: 5px 10px;display: inline-block;padding: 5px 15px;border: 1px solid #dddddd;text-align: center;">
+                        <i class="fa fa-thumbs-o-up fa-3" aria-hidden="true" style="font-size: 25px"></i>
+
+                        <div id="up_count">{{ obj.article.up_count }}</div>
+                    </a>
+                    <a id="down" class="down" articleid="{{ obj.article.nid }}"
+                       style="margin: 5px 30px 5px 10px;display: inline-block;padding: 5px 15px;border: 1px solid #dddddd;text-align: center;">
+                        <i class="fa fa-thumbs-o-down fa-3" aria-hidden="true" style="font-size: 25px"></i>
+
+                        <div id="down_count">{{ obj.article.down_count }}</div>
+                    </a>
+                </div>
+                <span style="color: red;" id="login_status"></span>
+            </div>
+
+
+            <div class="art-tips clearfix">
+                <div class="tips">
+                    <span class="ctime">{{ obj.article.create_time }}</span>
+                    <a class="author">{{ obj.article.blog.user.username }}</a>
+                    <span class="comment-count">评论({{ obj.article.comment_count }})</span>
+                    <span class="read-count">阅读({{ read_count }})</span>
+                </div>
+            </div>
+
+            <div id="AllanboltSignature">
+                <div style="border-bottom: #e0e0e0 1px dashed; border-left: #e0e0e0 1px dashed; padding: 10px; font-family: 微软雅黑; font-size: 11px; border-top: #e0e0e0 1px dashed; border-right: #e0e0e0 1px dashed; "
+                     id="PSignature">
+                    <div style="float:left;width:70px;">
+                        <img src="/static/imgs/o_Warning.png" style="width:65px;height:65px">
+                    </div>
+                    <div style="float:left;padding-top:10px;">
+
+                        <div style="padding: 1px">作者：<a href="http://www.cnblogs.com/wupeiqi/"
+                                                        target="_blank">{{ obj.article.blog.user.username }}</a></div>
+                        <div style="padding: 1px">出处：<a href="http://www.cnblogs.com/wupeiqi/" target="_blank">http://www.cnblogs.com/</a>
+                        </div>
+                        <div style="padding: 1px">本文版权归作者所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文连接</div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+
+
+            <div class="panel panel-default hot-comment">
+                <div class="panel-body" style="width: 100%; margin: 20px auto;">
+                    {% if request.session.username %}
+                        <img user_id="{{ user_obj.nid }}" src="{{ user_obj.avatar }}" style="border-radius: 30px; width: 30px; height: 30px;">
+                    {% else %}
+                        <img user_id="0" src="/static/imgs/avatar/default.png" style="border-radius: 30px; width: 30px; height: 30px;">
+                    {% endif %}
+                    <input id="words" style="width: 85%;" placeholder="想对作者说的话"></input>
+                    <input type="button" value="评论" id="talk">
+                    <input id="words_id" style="display: none;" />
+                </div>
+                <span style="color: red;" id="login_status2"></span>
+                {% for row in comment %}
+                    {% if not row.reply_id %}
+                        <div class="panel-body" style="width: 100%; margin: 20px auto;">
+                            <img src="{{ row.user.avatar }}" style="border-radius: 15px; width: 15px; height: 15px;">
+                            <label>{{ row.user.username }}</label><label>: {{ row.content }}</label>
+                            <label style="font-size: 1px;opacity: 0.5">{{ row.create_time }}</label>
+                            <a id="recall1">回复</a>
+                            <input type="text" style="display: none;" value="{{ row.nid }}" />
+                        </div>
+                        {% for col in comment %}
+                            {% if col.reply_id == row.nid %}
+                                <div class="panel-body" style="width: 70%; margin-left: 40px;">
+                                    <img src="{{ col.user.avatar }}"
+                                         style="border-radius: 15px; width: 15px; height: 15px;">
+                                    <label>{{ col.user.username }}</label><label> 回复 {{ col.to_user }}: {{ col.content }}</label>
+                                    <label style="font-size: 1px;opacity: 0.5">{{ row.create_time }}</label>
+                                    <a id="recall2">回复</a>
+                                    <input type="text" style="display: none;" value="{{ col.reply_id }}" />
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <hr style="border: 0.1px solid lightskyblue"/>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-1.12.4.js"></script>
+<script src="/static/plugins/kindeditor/kindeditor-all.js"></script>
+<script>
+    $("#talk").click(function () {
+        console.log($(this).prev().prev().attr("user_id"));
+        $.ajax({
+            url: '/talk/',
+            type: "POST",
+            data: {
+                'article_id': {{ obj.article.nid }},
+                'user_id': $(this).prev().prev().attr("user_id"),
+                'words': $('#words').val(),
+                'words_id': $('#words_id').val(),
+            },
+            //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+            success: function (data) {
+                // data是服务器端返回的字符串
+                var obj = JSON.parse(data);
+                if (obj.status) {
+                    location.reload();
+                }else {
+                    console.log(111111);
+                    if(obj.error == 0) {
+                        console.log(000000000);
+                        $("#login_status2").text("内容不能为空...");
+                    }
+                    else if(obj.error == 1){
+                        console.log(2222222222);
+                        $("#login_status2").text("请先登录...");
+                    }
+
+                }
+            }
+        })
+    });
+
+    $("#recall1, #recall2").click(function () {
+        //console.log("123");
+        var to_user = $(this).parent().children()[1].outerText;
+        var reply_id = $(this).next().val();
+        console.log(to_user, reply_id);
+        $("#words").val("@"+to_user+":");
+        $("#words_id").val(reply_id);
+    });
+
+    $("#up").click(function () {
+        $.ajax({
+            url: '/up/',
+            type: "POST",
+            data: {
+                'article_id': {{ obj.article.nid }},
+            },
+            //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+            success: function (data) {
+                // data是服务器端返回的字符串
+                var obj = JSON.parse(data);
+                if(obj.status) {
+                    console.log("hahahah", obj.data);
+                    $("#up_count").text(obj.data[0]);
+                    $("#down_count").text(obj.data[1]);
+                    $("#login_status").text("");
+
+                }else{
+                    console.log("please login");
+                    $("#login_status").text("请先登录...");
+                }
+            }
+        })
+    });
+    $("#down").click(function () {
+        $.ajax({
+            url: '/down/',
+            type: "POST",
+            data: {
+                'article_id': {{ obj.article.nid }},
+            },
+            //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+            success: function (data) {
+                // data是服务器端返回的字符串
+                var obj = JSON.parse(data);
+                if (obj.status) {
+                    console.log("hahahah", obj.data);
+                    $("#up_count").text(obj.data[0]);
+                    $("#down_count").text(obj.data[1]);
+                    $("#login_status").text("");
+                }else {
+                    console.log("please login");
+                    $("#login_status").text("请先登录...");
+                }
+            }
+        })
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+{% extends "backend_layout.html" %}
+
+{% block title %}基本信息-博客系统后台管理{% endblock %}
+
+{% block css %}
+    <style>
+        .form-horizontal .control-label {
+            padding-top: 7px;
+            margin-bottom: 0;
+            text-align: right;
+        }
+
+        .avatar-container {
+            height: 200px;
+            width: 200px;
+            padding: 2px;
+            border: 1px solid #dddddd;
+            position: relative;
+        }
+
+        .avatar-container img {
+            height: 100%;
+            width: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+
+        .avatar-container .text {
+            text-align: center;
+        }
+
+        .avatar-container .img-file {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            position: absolute;
+            z-index: 102;
+        }
+    </style>
+{% endblock %}
+
+{% block conent %}
+    <ol class="breadcrumb">
+        <li><a href="#">用户管理</a></li>
+        <li class="active">用户信息</li>
+    </ol>
+
+    <div>
+        <div class="row" style="position: relative;">
+
+            <form id="baseinfo_update_form" class="form-horizontal">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label">用户名</label>
+
+                        <div class="col-xs-5">
+                            <p class="form-control-static">{{ user_obj.username }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label">邮箱</label>
+
+                        <div class="col-xs-5">
+                            <p class="form-control-static">{{ user_obj.email }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nickname" class="col-xs-2 control-label">昵称</label>
+
+                        <div class="col-xs-5">
+                            <p id="nickname_p" class="form-control-static">{{ user_obj.nickname }}</p>
+                            <input type="text" class="form-control" value="{{ user_obj.nickname }}" id="nickname" name="nickname" placeholder="请输入昵称" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="blogUrl" class="col-xs-2 control-label">博客地址</label>
+
+                        <div class="col-xs-5">
+                            <p id="blogUrl_p" class="form-control-static">http://www.xxx.com/{{ blog_obj.site }}/</p>
+                            <input type="text" class="form-control" id="blogUrl" value="{{ blog_obj.site }}"
+                                   name="site" placeholder="如：seth,则个人博客为http://www.xxx.com/seth/" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="blogTheme" class="col-xs-2 control-label">博客主题</label>
+
+                        <div class="col-xs-5">
+                            <p id="blogTheme_p" class="form-control-static">{{ blog_obj.theme }}</p>
+                            <select name="theme" id="blogTheme" class="form-control" style="display: none;">
+                                <option value="默认主题">默认主题</option>
+                                <option value="红色火焰">红色火焰</option>
+                                <option value="雪国风情">雪国风情</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="blogTitle" class="col-xs-2 control-label">博客标题内容</label>
+
+                        <div class="col-xs-8">
+                            <p id="blogTitle_p" class="form-control-static">{{ blog_obj.title }}</p>
+                            <textarea name="title" id="blogTitle" style="min-height: 100px; display: none;" class="form-control"
+                                      placeholder="请输入博客标题名">{{ blog_obj.title }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            <a href="javascript:void(0);" onclick="baseinfo_edit_ready(this);" style="margin-top: 1000px;">修改信息</a>
+                            <button type="button" id="basenfo_update" class="btn btn-primary" style="display: none;">保 存</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+
+            <div style="position: absolute;" class="col-xs-offset-7 col-xs-5">
+                <div class="avatar-container">
+
+                    <form id="fm1" role="form" method="POST" action="/backend/upload_avatar/" enctype="multipart/form-data"
+                          target="upload_iframe">
+                        {% csrf_token %}
+                        <iframe style="display: none;" id="upload_iframe" name="upload_iframe"></iframe>
+                        <img id="previewImg"
+                             src="{{ user_obj.avatar }}"
+                             style="border-radius: 50%;width: 200px;height: 200px;">
+
+                        <!--<input id="avatarImg" name="avatar_img" type="file" class="img-file"/>-->
+                        <div class="container" style="position: relative;padding-left:70px; margin-top: 20px;">
+                            <span class="text"><a href="#">修改头像</a></span>
+                            <div style="position: absolute;top:0;">
+                                <input id="avatarImg" name="avatarImg" type="file" class="img-file" onchange="changeUpload();" style="width: 40px;height:40px;opacity:0;" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function changeUpload(){
+            img = document.getElementById("avatarImg");
+            console.log(img);
+            $("#upload_iframe").load(function(){
+                console.log(456);
+                var text = $("#upload_iframe").contents().find("body").text();
+                console.log(text);
+                if(text){
+                    var obj = JSON.parse(text);
+
+                    $("#previewImg").empty();
+                    var imgTag = document.getElementById("previewImg");
+                    console.log(imgTag);
+                    imgTag.src = "/" + obj.data;
+                    console.log(obj.data);
+                    location.reload("/backend/baseinfo/");
+                }
+
+            });
+
+            $("#fm1").submit(); // 表单提交
+        }
+
+        function baseinfo_edit_ready(ths) {
+            $(ths).next().attr("style", "");
+            $(ths).attr("style", "display: none;");
+            $("#blogTitle").attr("style", "");
+            $("#blogTitle_p").attr("style", "display: none;");
+            $("#blogTheme").attr("style", "");
+            $("#blogTheme_p").attr("style", "display: none;");
+            var val = $("#blogTheme_p").val();
+            console.log("{{ blog_obj.theme }}");
+            $("#blogTheme option:contains('{{ blog_obj.theme }}')").prop("selected", true);
+            $("#blogUrl").attr("style", "");
+            $("#blogUrl_p").attr("style", "display: none;");
+            $("#nickname").attr("style", "");
+            $("#nickname_p").attr("style", "display: none;");
+        }
+
+        $("#basenfo_update").click(function () {
+           $.ajax({
+               url: '/backend/baseinfo_update/',
+                type: "POST",
+                data: $('#baseinfo_update_form').serialize(), // form表单中的所有可以提交的值打包发送到后台
+                //data: {'hostname': $('#host').val(), 'ip': $('#ip').val(), 'port': $('#port').val(), 'b_id': $('#sel').val()},
+                //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+                success: function(data){
+                    // data是服务器端返回的字符串
+                    var obj = JSON.parse(data)
+                    if(obj.status){
+                        location.reload();
+                    }else{
+                        $('#error_msg').text(obj.error);
+                    }
+                }
+           })
+        });
+    </script>
+{% endblock %}

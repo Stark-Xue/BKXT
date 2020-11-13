@@ -1,0 +1,91 @@
+<div class="col-md-4">
+            <div class="panel panel-default hot-recommend">
+                <div class="panel-heading">作者信息</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        <img style="border-radius:25px;" src="{{ blog.user.avatar }}" width="50px"
+                             height="50px">
+                        {{ blog.user.username }}
+                        {% if not focus %}
+                            <form action="/focus/" method="post" style="display: inline-block;">
+                                <input type="text" name="path_info" value="{{ request.path_info }}" style="display: none;" />
+                                <input type="text" name="user_id" value="{{ blog.user.nid }}" style="display: none;" />
+                                <input type="submit" value="关注" style="margin-left: 170px" />
+                            </form>
+                        {% endif %}
+                    </ul>
+
+                    <table width="100%" style="margin: 10px;">
+                        <tr>
+                            <td>{{ article_count }}</td>
+                            <td>{{ fans_count }}</td>
+                            <td>{{ up_count }}</td>
+                            <td>{{ comment_count }}</td>
+                        </tr>
+                        <tr>
+                            <td>原创</td>
+                            <td>粉丝</td>
+                            <td>获赞</td>
+                            <td>评论</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default hot-recommend">
+                <div class="panel-heading">最新文章</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for row in new_article %}
+                            <a href="/{{ row.blog.site }}/article-{{ row.nid }}">
+                                <li style="font-size: 15px;">{{ row.title }}</li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel panel-default hot-comment">
+                <div class="panel-heading">热门文章</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for row in comment_max %}
+                            <div style="padding: 2px;">
+                                <a href="/{{ row.blog.site }}/article-{{ row.nid }}">
+                                    <li style="display: inline-block; font-size: 15px;">{{ row.title }}</li>
+                                </a>&nbsp;&nbsp;&nbsp;
+                                <i class="glyphicon glyphicon-eye-open"></i>
+                                <i style="color: gray;">{{ row.comment_count }}</i>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default hot-comment">
+                <div class="panel-heading">个人分类</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for k,v in category_count_dic.items %}
+                            <div style="padding: 2px;">
+                                <a href="/{{ blog.user.username }}/category/{{ k }}">
+                                    <li style="display: inline-block; font-size: 15px;">{{ v.0 }}</li>
+                                </a>({{ v.1 }})
+                            </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default hot-comment">
+                <div class="panel-heading">个人标签</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for k,v in tags_count_dic.items %}
+                            <div style="padding: 2px;">
+                                <a href="/{{ blog.user.username }}/tag/{{ k }}">
+                                    <li style="display: inline-block; font-size: 15px;">{{ v.0 }}</li>
+                                </a>({{ v.1 }})
+                            </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>

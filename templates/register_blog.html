@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/edmure.css"/>
+    <link rel="stylesheet" href="/static/css/commons.css"/>
+    <link rel="stylesheet" href="/static/css/account.css"/>
+    <style>
+        .avatar-container{
+            height: 200px;
+            width: 200px;
+            padding: 2px;
+            border: 1px solid #dddddd;
+            position: relative;
+        }
+        .avatar-container img{
+            height: 100%;
+            width: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+        .avatar-container .text{
+            text-align: center;
+        }
+        .avatar-container .img-file{
+            top:0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            position: absolute;
+            z-index: 102;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register">
+    <div style="font-size: 25px; font-weight: bold;text-align: center;">
+        博客界面主题
+    </div>
+
+    <form id="fm2" action="/register_blog" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" value="{{ path_info }}" name="path_info" style="display: none;" />
+        <input type="text" value="{{ user_id }}" name="user_id" style="display: none;" />
+
+        <div class="form-group">
+            <label for="title">个人博客标题</label>
+            <input type="text" class="form-control" id="title" placeholder="请输入个人博客标题" name="title">
+            <span id="error_msg_user" style="color: red;"></span>
+        </div>
+        <div class="form-group">
+            <label for="site">个人博客前缀</label>
+            <input type="text" class="form-control" id="site" placeholder="请输入个人博客前缀" name="site">
+            <span id="error_msg_nick" style="color: red;"></span>
+        </div>
+        <div class="form-group">
+            <label for="theme">个人博客主题</label>
+            <br/>
+            <select name="theme">
+                <option value="默认主题">默认主题</option>
+                <option value="雪国风光">雪国风光</option>
+                <option value="红色火焰">红色火焰</option>
+            </select>
+            <span id="error_msg_email" style="color: red;"></span>
+        </div>
+
+        <div >
+            <input type="submit" class="btn btn-default" value="确定" />
+        </div>
+
+    </form>
+</div>
+<script src="/static/js/jquery-1.12.4.js"></script>
+<script>
+
+    function changeCheckCode(ths){
+        ths.src = ths.src + "?";
+    }
+
+    $("#register").click(function(){
+        $.ajax({
+            url: '/register',
+            type: "POST",
+            data: $('#fm2').serialize(), //form表单中的所有可以提交的值打包发送到后台
+            //data: {'hostname': $('#host').val(), 'ip': $('#ip').val(), 'port': $('#port').val(), 'b_id': $('#sel').val()},
+            //function有三个参数，其中的第2个或第3个就是XMLHttprequest对象
+            success: function(data){
+                // data是服务器端返回的字符串
+                var obj = JSON.parse(data);
+                if(obj.status){
+                    $("#register_sub").trigger('click');
+                }else{
+                    $('#error_msg_user').text(obj.username);
+                    $('#error_msg_nick').text(obj.nickname);
+                    $('#error_msg_email').text(obj.email);
+                    $('#error_msg_pwd').text(obj.password);
+                    $('#error_msg_pwd2').text(obj.confirm_password);
+                    $('#error_msg_check').text(obj.check_code);
+                }
+
+            }
+        });
+    });
+</script>
+</body>
+</html>

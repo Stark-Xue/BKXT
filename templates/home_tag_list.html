@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/edmure.css"/>
+    <link rel="stylesheet" href="/static/css/commons.css"/>
+    <link rel="stylesheet" href="/static/css/row-avatar.css"/>
+</head>
+<body>
+{% include 'include/header.html' %}
+<div class="container">
+    <div>
+        {% include 'home_layout.html' %}
+        <div class="summary-list">
+            {% for row in article_list %}
+                <div class="summary-item" style="border-bottom: 1px solid #dddddd;padding: 8px 0;">
+                    <div class="summary-title">
+                        <a href="/{{ blog.site }}/article-{{ row.nid }}">{{ row.title }}</a>
+                    </div>
+                    <div class="summary-content">
+                        {{ row.summary }}
+                    </div>
+                    <div class="summary-footer">
+                        <span>{{ row.create_time|date:"Y-m-d H:i:s" }}</span>
+                        <span>{{ row.user.nickname }}</span>
+                        <span>阅读({{ row.read_count }})</span>
+                        <a>评论({{ row.comment_count }})</a>
+                        <a href="/backend/edit-article-{{ row.nid }}.html">编辑</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-1.12.4.js"></script>
+<script src="/static/plugins/kindeditor/kindeditor-all.js"></script>
+<script>
+
+</script>
+</body>
+</html>

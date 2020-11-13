@@ -1,0 +1,65 @@
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" style="font-size: 20px;">BLOG</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {% if not article_type_id %}
+                    <li class="active"><a href="/">全部</a></li>
+                {% else %}
+                    <li><a href="/">全部</a></li>
+                {% endif %}
+
+                {% for item in article_type_list %}
+                    {% if item.0 == article_type_id %}
+                        <li class="active"><a href="/all/{{ item.0 }}">{{ item.1 }}</a></li>
+                    {% else %}
+                        <li><a href="/all/{{ item.0 }}">{{ item.1 }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right ">
+                {% if request.session.username %}
+                    <li>
+                        <a href="/backend/baseinfo/">{{ request.session.username }}</a>
+                    </li>
+                    <li><a style="padding-left: 0;padding-right: 0;">·</a></li>
+                    <li>
+                        <a href="/backend/articles-0-0/">我的博客</a>
+                    </li>
+                    <li><a style="padding-left: 0;padding-right: 0;">·</a></li>
+                    <li><a href="/backend/index/">管理</a></li>
+                    <li><a style="padding-left: 0;padding-right: 0;">|</a></li>
+                    <li><a href="/logout/">退出</a></li>
+                {% else %}
+
+                    <li>
+                        <form action="/login/" method="get" style="display: inline-block; margin-top: 10px;">
+                            {% csrf_token %}
+                            <input type="text" name="path_info" style="display: none;" value="{{ request.path_info }}">
+                            <input type="submit" value="登陆" >
+                        </form>
+                    </li>
+
+                    <li>
+                        <form action="/register/" method="get" style="display: inline-block; margin-top: 10px;">
+                            {% csrf_token %}
+                            <input type="text" name="path_info" style="display: none;" value="{{ request.path_info }}">
+                            <input type="submit" value="注册" >
+                        </form>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
