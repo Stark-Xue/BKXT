@@ -71,7 +71,7 @@ class ArticleDetail(models.Model):
     """
     文章详细表
     """
-    content = models.TextField(verbose_name='文章内容',)
+    content = models.TextField(verbose_name='文章内容', )
 
     article = models.OneToOneField(verbose_name='所属文章', to='Article', to_field='nid', on_delete=models.CASCADE)
 
