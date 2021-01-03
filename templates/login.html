@@ -13,55 +13,56 @@
     </style>
 </head>
 <body>
-
-<div class="login" style="min-height: 400px;">
-    <div style="font-size: 25px; font-weight: bold;text-align: center;">
-        博客系统用户登录
-    </div>
-    <form id="fm2" action="/login/" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="text" value="{{ path_info }}" name="path_info" style="display: none;" />
-        <div class="form-group">
-            <label for="username">用户名</label>
-            {{ obj.username }}
-            <span style="color: red;">{{ obj.errors.username.0 }}</span>
+<div style="min-height: 600px;>
+    <div class="login">
+        <div style="font-size: 25px; font-weight: bold;text-align: center;">
+            博客系统用户登录
         </div>
-        <div class="form-group">
-            <label for="password">密码</label>
-            {{ obj.password }}
-            <span style="color: red;">{{ obj.errors.password.0 }}</span>
-        </div>
-        <div class="form-group">
-            <label for="check_code">验证码</label>
-
-            <div class="row">
-                <div class="col-xs-7">
-                    <input type="text" class="form-control" id="check_code" placeholder="请输入验证码" name="check_code">
-                    <span id="error_msg_check" style="color: red;"></span>
-                </div>
-                <div class="col-xs-5">
-                    <img src="/check_code.html" onclick="changeCheckCode(this);">
-                </div>
+        <form id="fm2" action="/login/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" value="{{ path_info }}" name="path_info" style="display: none;" />
+            <div class="form-group">
+                <label for="username">用户名</label>
+                {{ obj.username }}
+                <span style="color: red;">{{ obj.errors.username.0 }}</span>
             </div>
-            <span style="color: red;">{{ check_err }}</span>
+            <div class="form-group">
+                <label for="password">密码</label>
+                {{ obj.password }}
+                <span style="color: red;">{{ obj.errors.password.0 }}</span>
+            </div>
+            <div class="form-group">
+                <label for="check_code">验证码</label>
 
-        </div>
+                <div class="row">
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control" id="check_code" placeholder="请输入验证码" name="check_code">
+                        <span id="error_msg_check" style="color: red;"></span>
+                    </div>
+                    <div class="col-xs-5">
+                        <img src="/check_code.html" onclick="changeCheckCode(this);">
+                    </div>
+                </div>
+                <span style="color: red;">{{ check_err }}</span>
+
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="rmb"/>
+                <span>记住我</span>
+            </div>
+            <div>
+                <input type="submit" class="btn btn-default" id="login" value="登录" style="background-color: #5bc0de" />
+            </div>
+            <span style="color: red;">{{ user_err }}</span>
+        </form>
+        <div style="height: 50px;"></div>
         <div class="form-group">
-            <input type="checkbox" name="rmb"/>
-            <span>记住我</span>
+            没有账户，
+            <a href="/register">立即注册</a>
         </div>
-        <div>
-            <input type="submit" class="btn btn-default" id="login" value="登录" style="background-color: #5bc0de" />
-        </div>
-        <span style="color: red;">{{ user_err }}</span>
-    </form>
-    <div style="height: 50px;"></div>
-    <div class="form-group">
-        没有账户，
-        <a href="/register">立即注册</a>
-        </div>
+    </div>
+    {% include 'include/footer.html' %}
 </div>
-{% include 'include/footer.html' %}
 <script src="/static/js/jquery-1.12.4.js"></script>
 <script>
     function changeCheckCode(ths) {
