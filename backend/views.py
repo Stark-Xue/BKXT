@@ -323,9 +323,16 @@ def del_article(request, nid):
     :param nid:
     :return:
     """
+    with transaction.atomic():  # 事务操作
+        models.UpDown.objects.filter(article_id=nid).delete()
+        models.Comment.objects.filter(article_id=nid).delete()
+        models.Article2Tag.objects.filter(article_id=nid).delete()
+        models.Article.objects.filter(nid=nid).delete()
+        models.ArticleDetail.objects.filter(article_id=nid).delete()
 
 
-    return HttpResponse(nid)
+
+    return redirect("/backend/articles-0-0/")
 
 
 @check_login
